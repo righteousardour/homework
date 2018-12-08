@@ -1,0 +1,80 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int  n=5, m=4, dep, x, y, cn=0;  
+int  fx[8]={1,1,2,2,-1,-1,-2,-2}, fy[9]={2,-2,1,-1,-2,2,-1,1};;   //(x,y)处y的8个方向
+int **a;
+void create( ){
+	/*cout<<"输入棋盘的长、宽";
+	cin>>n>>m;*/
+	a=new int *[n];//点被马经过与否的标记，0未走过否则a[xx][yy]=dep//当前所走步数
+	for(int i=0;i<n;i++)
+		a[i]=new int[m];  //实际用的的坐标只有m*n，+1是为了去掉下标0
+	
+}
+void initial(){ //初始化棋盘并输入棋子的坐标
+	for(int i=0;i<n;i++)  
+		for(int j=0;j<m;j++)  
+			a[i][j]=0;	
+	/*cout<<"输入棋子的位置：";
+	cin>>x>>y;
+	if(x>m||y>n||x<1||y<1)
+	  cout<<"x,y,error!";
+	  return;*/
+	x=0;  //测试时用
+	y=0;
+	a[x][y]=1;
+}
+bool check(int x,int y){ //x代表行，y为列
+	//return ((y>=1&&y<=m)&&(x>=1&&x<=n)&&a[x][y]==0);  //为真的话，未出界并未走过
+	if (x >= n || y >= m || x < 0 || y < 0 || a[x][y] != 0) {   
+            return 0;   
+    }   
+    return 1; 
+}
+void output() 
+{
+	cn=cn+1;
+	cout<<"\n count="<<cn;
+	for(int i=0;i<n;i++){
+		cout<<endl;
+		for(int j=0;j<m;j++) 
+			cout<<setw(3)<<a[i][j];
+	}
+}
+void find(int x,int y,int dep)
+{
+	int  i, xx, yy ;
+	for(i=0;i<8;i++)   	//加上方向增量,形成新的坐标/ 
+	{
+		xx=x+fx[i];  
+		yy=y+fy[i];  
+		if (check(xx,yy)==1) //判断新坐标是否出界,是否已走过?/
+		{
+			a[xx][yy]=dep;      //走向新的坐标/    
+			if (dep==n*m) 
+				output( );
+			else 
+				find(xx,yy,dep+1);    //从新坐标出发,递归下一层/     
+			a[xx][yy]=0;            //回溯,恢复未走标志/
+		}
+	}
+}
+void main( )
+{ 
+	cn=0;     
+	dep=1;
+	create();//输入m,n,并创建动态数组a[m][n]。
+	initial();//初始化棋盘，并输入棋子位置
+	find(x,y,2);//2为深度dep
+	if(cn==0 )
+		cout<<"No answer!";
+	else
+		cout<<"count= "<<cn;
+	for(int i=1;i<m;i++)
+		delete[] a[i];
+	delete[]a;
+
+}
+// n=5,m=4,x=0,y=0 有32种走法
